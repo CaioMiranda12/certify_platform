@@ -21,160 +21,382 @@ export const FormLogin = () => {
   const { auth } = useAuthStoreData();
   const navigation = useNavigate();
 
-  useEffect(() => {
-    if (!auth?._id) return;
-    if ((auth.role as string) === "empresa") {
-      navigation("/"); // Placeholder, redirect according to your existing structure
-    } else {
-      navigation("/meus-certificados");
-    }
-  }, [auth, navigation]);
+useEffect(() => {
+  if (!auth?._id) return;
 
-  useEffect(() => {
-    if (isError) {
-      toast.error('E-mail ou senha inválidos.', {
-        position: "top-center",
-        autoClose: 5000,
-        ...TOAST_STYLES.error
-      });
-    }
+  if ((auth.role as string) === "empresa") {
+    navigation("/");
+  } else {
+    navigation("/meus-certificados");
+  }
+}, [auth, navigation]);
 
-    if (isSuccess) {
-      toast.success('Login realizado com sucesso!', {
-        position: "top-center",
-        autoClose: 3000,
-        ...TOAST_STYLES.success
-      });
-    }
-  }, [isError, isSuccess]);
+useEffect(() => {
+  if (isError) {
+    toast.error("E-mail ou senha inválidos.", {
+      position: "top-center",
+      autoClose: 5000,
+      ...TOAST_STYLES.error,
+    });
+  }
 
-  const onSubmit = handleSubmit((formData: any) => {
-    const authData = {
-      ...formData,
-      role
-    };
-    mutate(authData);
-  });
+  if (isSuccess) {
+    toast.success("Login realizado com sucesso!", {
+      position: "top-center",
+      autoClose: 3000,
+      ...TOAST_STYLES.success,
+    });
+  }
+}, [isError, isSuccess]);
 
-  return (
-    <section className="flex min-h-screen w-full font-inter bg-[#F4F5F9] lg:bg-white text-[#1A1551]">
-      <ToastContainer />
+const onSubmit = handleSubmit((formData: any) => {
+  const authData = {
+    ...formData,
+    role,
+  };
 
-      {/* Left Panel - Form */}
-      <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-16 xl:px-32 relative bg-[#fefefe]">
-        <div className="max-w-md w-full mx-auto lg:mx-0 xl:mx-auto">
-          {/* Logo */}
-          <div className="mb-12 flex justify-center w-full">
-            <img src={Logo} alt="Certify Logo" className="h-[4.5rem]" />
-          </div>
+  mutate(authData);
+});
 
-          <h1 className="text-3xl lg:text-3xl font-bold mb-3 line-heigth:1.79rem text-[#0e0393]">Acesse sua conta</h1>
-          <p className="text-gray-600 mb-8 text-sm lg:text-base leading-relaxed">
-            Você pode acessar sua conta com e-mail, {role === "empresa" ? "CNPJ" : "CPF"} ou telefone e senha cadastrados
-          </p>
+return (
+  <section className="flex min-h-screen w-full font-inter bg-white text-[#1A1551]">
+    <ToastContainer />
 
-          <p className="sr-only">Login / Selecione se você é empresa ou aluno</p>
+    <div className="flex-1 w-full flex flex-col justify-center bg-white px-6 py-8 md:px-12 lg:px-16 xl:px-24">
+      <div className="w-full max-w-md mx-auto">
 
-          {/* Role Selector */}
-          <div className="flex space-x-4 mb-6">
-            <button
-              type="button"
-              className={`flex-1 py-3 rounded-2xl border font-semibold transition-colors ${role === "aluno"
-                  ? "bg-[#E0E7FF] border-[#3a30f6] text-[#3a30f6]"
-                  : "bg-transparent border-gray-300 text-gray-500 hover:border-gray-400"
-                }`}
-              onClick={() => setRole("aluno")}
+        <div className="flex justify-end items-center gap-2 text-sm md:text-base mb-8">
+          <span className="text-[#4B5563]">
+          Ainda Não tem conta?
+          </span>
+
+          <Link
+            to="/cadastro"
+            className="font-bold text-[#0069a8] hover:text-[#0069a8] hover:underline transition-colors"
+          >
+            Criar conta
+          </Link>
+        </div>
+
+        {/* =================================================
+            TÍTULO
+        ================================================== */}
+        <div className="mb-7">
+          <h1 className="text-[31px] font-semibold leading-tight text-[#060607] mb-3">
+           Login          </h1>
+        </div>
+
+        {/* =================================================
+            ALUNO / EMPRESA
+        ================================================== */}
+        <div
+          className="flex gap-4 mb-7"
+          role="tablist"
+          aria-label="Selecione o tipo de perfil"
+        >
+          {/* Aluno */}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={role === "aluno"}
+            onClick={() => setRole("aluno")}
+            className={`flex-1 py-3 rounded-xl border font-semibold transition-all duration-200 ${
+              role === "aluno"
+                ? "bg-[#0069a8] border-[#0069a8] text-white"
+                : "bg-white border-[#D1D5DB] text-[#4B5563] hover:border-[#0069a8] hover:text-[#000000]"
+            }`}
+          >
+            Aluno
+          </button>
+
+          {/* Empresa */}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={role === "empresa"}
+            onClick={() => setRole("empresa")}
+            className={`flex-1 py-3 rounded-xl border font-semibold transition-all duration-200 ${
+              role === "empresa"
+                ? "bg-[#0069a8] border-[#0069a8] text-white"
+                : "bg-white border-[#D1D5DB] text-[#4B5563] hover:border-[#0069a8] hover:text-[#000000]"
+            }`}
+          >
+            Empresa
+          </button>
+        </div>
+
+        {/* =================================================
+            FORMULÁRIO
+        ================================================== */}
+        <form
+          onSubmit={onSubmit}
+          noValidate
+          className="space-y-5"
+        >
+
+          {/* =================================================
+              E-MAIL
+          ================================================== */}
+          <div>
+            <label
+              htmlFor="email"
+              className="block mb-2 text-sm font-semibold text-[#1A1551]"
             >
-              Aluno
-            </button>
-            <button
-              type="button"
-              className={`flex-1 py-3 rounded-2xl border font-semibold transition-colors ${role === "empresa"
-                  ? "bg-[#E0E7FF] border-[#3a30f6] text-[#3a30f6]"
-                  : "bg-transparent border-gray-300 text-gray-500 hover:border-gray-400"
-                }`}
-              onClick={() => setRole("empresa")}
-            >
-              Empresa
-            </button>
-          </div>
+              E-mail
+            </label>
 
-          <form onSubmit={onSubmit} className="space-y-4">
-            {/* Email Field */}
             <div className="relative">
               <input
                 {...register("email")}
-                type="text"
-                placeholder={`E-mail ou ${role === "empresa" ? "CNPJ" : "CPF"}`}
-                className={`w-full bg-[#E8E8E8] px-4 py-4 rounded-xl border focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50 transition-all font-medium ${errors.email ? "border-red-500 ring-1 ring-red-500" : "border-transparent"
-                  }`}
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Digite seu e-mail"
+                autoComplete="email"
+                aria-label="E-mail"
+                aria-required="true"
+                aria-invalid={!!errors.email}
+                aria-describedby={
+                  errors.email ? "email-error" : undefined
+                }
+                className={`w-full px-4 py-4 rounded-xl bg-[#F3F4F6] border outline-none text-[#1A1551] placeholder-[#6B7280] font-medium transition-all duration-200 ${
+                  errors.email
+                    ? "border-[#DC2626] focus:border-[#DC2626] focus:ring-2 focus:ring-[#DC2626]/20"
+                    : "border-transparent focus:border-[#08080d] focus:ring-2 focus:ring-[#0d0c11]/20"
+                }`}
               />
+
+              {errors.email && (
+                <FiAlertCircle
+                  size={21}
+                  aria-hidden="true"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#DC2626]"
+                />
+              )}
             </div>
 
-            {/* Password Field */}
+            {errors.email && (
+              <p
+                id="email-error"
+                role="alert"
+                aria-live="polite"
+                className="mt-2 text-sm font-medium text-[#DC2626]"
+              >
+                Digite um e-mail válido
+              </p>
+            )}
+          </div>
+
+          {/* =================================================
+              SENHA
+          ================================================== */}
+          <div>
+            <label
+              htmlFor="password"
+              className="block mb-2 text-sm font-semibold text-[#1A1551]"
+            >
+              Senha
+            </label>
+
             <div className="relative">
               <input
                 {...register("password")}
+                id="password"
+                name="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Senha"
-                className={`w-full bg-[#E8E8E8] px-4 py-4 rounded-xl border pr-12 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50 transition-all font-medium ${errors.password ? "border-red-500 ring-1 ring-red-500" : "border-transparent"
-                  }`}
+                placeholder="Digite sua senha"
+                autoComplete="current-password"
+                aria-label="Senha"
+                aria-required="true"
+                aria-invalid={!!errors.password}
+                aria-describedby={
+                  errors.password ? "password-error" : undefined
+                }
+                className={`w-full px-4 py-4 pr-14 rounded-xl bg-[#F3F4F6] border outline-none text-[#1A1551] placeholder-[#6B7280] font-medium transition-all duration-200 ${
+                  errors.password
+                    ? "border-[#DC2626] focus:border-[#DC2626] focus:ring-2 focus:ring-[#DC2626]/20"
+                    : "border-transparent focus:border-[#030307] focus:ring-2 focus:ring-[#040407]/20"
+                }`}
               />
+
+              {/* Olho */}
               <button
                 type="button"
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={
+                  showPassword
+                    ? "Ocultar senha"
+                    : "Exibir senha"
+                }
+                aria-live="polite"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#eeeef1] transition-colors"
               >
-                {showPassword ? <FiEyeOff size={22} /> : <FiEye size={22} />}
+                {showPassword ? (
+                  <FiEyeOff
+                    size={22}
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <FiEye
+                    size={22}
+                    aria-hidden="true"
+                  />
+                )}
               </button>
             </div>
 
-            {/* Shared Error Message as requested */}
-            {(errors.email || errors.password) && (
-              <p className="text-red-500 text-sm mt-1 font-medium">
-                E-mail ou senha inválidos.
+            {errors.password && (
+              <p
+                id="password-error"
+                role="alert"
+                aria-live="polite"
+                className="mt-2 text-sm font-medium text-[#DC2626]"
+              >
+                Senha incorreta
               </p>
             )}
+          </div>
 
-            {/* Remember Me */}
-            <div className="flex items-center space-x-2 pt-1 pb-1">
+          {/* Erro geral de autenticação */}
+          {isError && (
+            <p
+              role="alert"
+              aria-live="polite"
+              className="text-sm font-medium text-[#DC2626]"
+            >
+              E-mail ou senha inválidos.
+            </p>
+          )}
+
+          {/* =================================================
+              LEMBRAR SENHA / ESQUECI MINHA SENHA
+          ================================================== */}
+          <div className="flex items-start justify-between mt-2">
+
+            {/* Lembrar senha */}
+            <div className="flex items-center pt-2">
               <input
+                {...register("rememberMe")}
                 type="checkbox"
-                id="remember"
-                className="w-4 h-4 rounded border-gray-300 text-[#4F46E5] focus:ring-[#4F46E5]"
+                id="rememberMe"
+                name="rememberMe"
+                defaultChecked
+                className="w-4 h-4 rounded border-[#D1D5DB] text-[#4F46E5] focus:ring-[#4F46E5]"
               />
-              <label htmlFor="remember" className="text-sm font-medium text-[#1A1551]">
-                Lembre - se de mim
+
+              <label
+                htmlFor="rememberMe"
+                className="ml-2 text-sm font-medium text-[#4B5563] cursor-pointer"
+              >
+                Lembrar senha
               </label>
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={!isValid || isPending}
-              className="w-full py-4 bg-[#4F46E5] text-white rounded-xl font-bold mt-2 disabled:bg-[#4F46E5]/50 disabled:cursor-not-allowed hover:bg-[#4338CA] transition-colors flex justify-center items-center"
+            {/* Esqueci minha senha */}
+            <Link
+              to="/forgot-password"
+              state={{ role }}
+              className="text-sm font-bold text-[#0069a8] hover:text-[#0069a8] hover:underline -mt-1 transition-colors"
             >
-              {isPending ? <BiLoader size={24} className="animate-spin" /> : "Acessar"}
-            </button>
+              Esqueci minha senha
+            </Link>
+          </div>
 
-            {/* Forgot Password Link */}
-            <div className="text-center mt-6">
-              <Link to="/forgot-password" state={{ role }} className="text-sm text-[#4F46E5] font-bold hover:underline transition-all block mt-4">
-                Esqueci a senha
-              </Link>
-            </div>
-          </form>
-        </div>
+          {/* =================================================
+              BOTÃO ENTRAR
+          ================================================== */}
+          <button
+            type="submit"
+            disabled={!isValid || isPending}
+            aria-live="polite"
+            className="
+              w-full
+              py-4
+              rounded-xl
+              bg-[#0069a8]
+              text-white
+              font-bold
+              flex
+              items-center
+              justify-center
+              gap-2
+              transition-colors
+              duration-200
+              hover:bg-[#145572]
+              disabled:bg-[#9CA3AF]
+              disabled:cursor-not-allowed
+              disabled:hover:bg-[#9CA3AF]
+            "
+          >
+            {isPending ? (
+              <>
+                <BiLoader
+                  size={22}
+                  className="animate-spin"
+                  aria-hidden="true"
+                />
+
+                <span>Carregando</span>
+              </>
+            ) : (
+              "Entrar"
+            )}
+          </button>
+{/* =================================================
+    SUPORTE
+================================================== */}
+<div className="fixed bottom-6 left-6">
+
+  <p className="text-sm text-[#000000] mb-1">
+    Precisa de ajuda?
+  </p>
+
+  <div className="flex items-center gap-2">
+
+    <span className="text-sm text-[#4B5563]">
+      Fale com o nosso suporte
+    </span>
+
+    <a
+      href="mailto:suporte@certify.com.br"
+      className="text-sm font-semibold text-[#0069a8] hover:underline transition-colors"
+    >
+      suporte@certify.com.br
+    </a>
+
+  </div>
+
+</div>
+        </form>
       </div>
+    </div>
 
-      {/* Right Panel - Image */}
-      <div className="hidden lg:block lg:flex-1 relative bg-black">
+    <div className="hidden md:block md:flex-1 relative overflow-hidden">
+
+      {/* Imagem do perfil */}
+      <img
+        src={
+          role === "empresa"
+            ? EmpresaPhoto
+            : GirlWithCertificate
+        }
+        alt={
+          role === "empresa"
+            ? "Imagem promocional para empresa"
+            : "Imagem promocional de formatura"
+        }
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+
+      {/* Logo sobre a imagem */}
+      <div className="absolute top-8 left-8 z-10">
         <img
-          src={role === "empresa" ? EmpresaPhoto : GirlWithCertificate}
-          alt="Imagem de destaque login"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${role === "empresa" ? "grayscale" : ""}`}
+          src={Logo}
+          alt="Logo Certify"
+          className="h-16 w-auto"
         />
       </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);
+}
