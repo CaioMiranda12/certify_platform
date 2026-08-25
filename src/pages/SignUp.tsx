@@ -6,54 +6,75 @@ import { CompanyForm } from '@/components/CompanyForm';
 import { StudentForm } from "@/components/StudentForm";
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-
+import { LuShieldAlert } from "react-icons/lu";
+import { PrimaryButton } from '@/components/ButtonPrimary';
 
 export const SignUpForm = () => {
   const [isStudent, setIsStudent] = useState(true);
 
   return (
-    <div className="w-full bg-[#F4F5F9] flex flex-col-reverse lg:flex-row">
-      <section className="flex-1 h-full w-full flex flex-col items-center">
-        <div className="p-[30px]">
-           {/* Logo */}
-          <div className='flex justify-center mb-18'>
-            <img src={LogoCertify} alt="Logo Certify" className="h-[4.5rem]"/>
-          </div>
-
-          <h1 className="text-primary-blue-600 font-semibold text-[31px]">Criar conta</h1>
-          <p className="text-primary-blue-700 font-normal text-[22px]">Selecione se você é empresa ou aluno</p>
-
-          <div className="flex justify-between gap-4 pt-7 pb-5">
-            <div className='flex-1'>
-              <SecondaryButton onClick={() => setIsStudent(true)} isActive={isStudent}>
-                Aluno
-              </SecondaryButton>
-            </div>
-
-            <div className='flex-1'>
-              <SecondaryButton onClick={() => setIsStudent(false)} isActive={!isStudent}>
-                Empresa
-              </SecondaryButton>
-            </div>
-          </div>
-
-          {isStudent ? (
-            <StudentForm />
-          ) : (
-            <CompanyForm />
-          )}
-
-          <div className='flex justify-center gap-5 mt-5 text-[19px]'>
-            <span>Já tem conta?</span>
-            <Link to={'/login'} className='text-primary-blue-base font-bold hover:underline'>Faça o login aqui!</Link>
-          </div>
-
+    <div className="w-full bg-[#F9FAFB] flex flex-col-reverse lg:flex-row">
+      <section className='flex-1 mt-6 mx-12'>
+        <div className='w-full flex justify-end mb-12'>
+          <Link
+            to="/login"
+            className='text-sm font-medium text-[#667085]'
+          >
+            Já tem conta? <span className="text-[#0069A8] font-semibold">Login</span>
+          </Link>
         </div>
+
+        <h1 className='text-3xl font-extrabold text-[#101828]'>
+          Criar conta
+        </h1>
+
+        <div className='my-6 flex border border-[#E5E7EB] rounded-xl p-1.5 shadow-sm'>
+          <PrimaryButton>Aluno</PrimaryButton>
+          <SecondaryButton>Empresa</SecondaryButton>
+        </div>
+
+        <div>
+          <StudentForm />
+        </div>
+
+        <div className="flex items-start gap-5 p-8">
+          <LuShieldAlert
+            color='#0069A8'
+            className="w-6 h-6 shrink-0"
+          />
+
+          <div className="flex flex-col gap-1">
+            <p className="text-[#101828] text-base font-bold">
+              Precisa de ajuda?
+            </p>
+
+            <p className="text-[#4B5563] text-base font-medium">
+              Fale com nosso suporte:{" "}
+              <span className="text-[#0069A8]">
+                suporte@certify.com.br
+              </span>
+            </p>
+          </div>
+        </div>
+
+
       </section>
 
-      <section className="hidden lg:block lg:flex-1">
-        <img src={isStudent ? GirlWithCertificateImg : SignUpCompanyImg} alt="Garota com certificado ou empresa" className="w-full h-full" />
+      {/* Div da imagem */}
+      <section className="hidden lg:block lg:flex-1 relative">
+        <img
+          src={isStudent ? GirlWithCertificateImg : SignUpCompanyImg}
+          alt="Garota com certificado ou empresa"
+          className="w-full h-full object-cover"
+        />
+
+        <img
+          src={LogoCertify}
+          alt="Certify"
+          className="absolute top-5 right-8 w-32 h-auto"
+        />
       </section>
     </div>
+
   );
 };
