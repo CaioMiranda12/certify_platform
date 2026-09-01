@@ -2,8 +2,10 @@ import { formatCPF } from "@/utils/formatCpf";
 import { formatPhone } from "@/utils/formatPhone";
 import { useState } from "react";
 import { Controller, type Control, type FieldErrors, type FieldValues, type Path } from "react-hook-form";
+import { BiCheck } from "react-icons/bi";
 import { IoEyeOutline } from "react-icons/io5";
 import { LuEyeClosed } from "react-icons/lu";
+import { VscError } from "react-icons/vsc";
 
 interface InputProps<T extends FieldValues> {
   name: Path<T>;
@@ -13,7 +15,14 @@ interface InputProps<T extends FieldValues> {
   placeholderText: string;
   isOptional?: boolean;
   mask?: "cpf" | "phone";
+  rules?: PasswordRule[];
 }
+
+interface PasswordRule {
+  label: string;
+  valid: boolean;
+}
+
 
 export function Input<T extends FieldValues>({
   name,
@@ -22,11 +31,19 @@ export function Input<T extends FieldValues>({
   typeInput = 'text',
   placeholderText,
   isOptional = false,
-  mask
+  mask,
+  rules = []
 }: InputProps<T>) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = typeInput === 'password';
   const formattedType = isPassword ? (showPassword ? 'text' : 'password') : typeInput;
+
+  const hasInvalidRule = rules.some((rule) => !rule.valid);
+
+  const isPasswordValid =
+    isPassword &&
+    rules.length > 0 &&
+    !hasInvalidRule;
 
   type MaskType = "cpf" | "phone" | "none";
 
@@ -58,38 +75,74 @@ export function Input<T extends FieldValues>({
         render={({ field }) => (
           <div className="flex flex-col gap-1.5">
             <div className="relative">
-              <input
-                {...field}
-                name={name}
-                type={formattedType}
-                placeholder={isOptional ? placeholderText : `${placeholderText} *`}
-                onChange={(e) => handleInputChange(e.target.value, field.onChange, mask)}
-                className={`w-full p-5 bg-primary-gray-100 text-primary-gray-base font-normal placeholder:text-[27px] text-[27px] rounded-[20px] outline-none border-2 h-20
-                  placeholder:text-primary-gray-base
-              focus:border-primary-blue-300
-              ${errors?.[name] ? 'border-[#CF1A0F]' : 'border-transparent'}
-              `}
-              />
+              <label className="text-[#171717]">
+                {placeholderText}
+                {!isOptional && <span className="text-[#F73B3B]">*</span>}
+              </label>
+              <div className="relative mt-2">
+                <input
+                  {...field}
+                  name={name}
+                  type={formattedType}
+                  placeholder={isOptional ? placeholderText : `${placeholderText} *`}
+                  onChange={(e) =>
+                    handleInputChange(e.target.value, field.onChange, mask)
+                  }
+                  className={`w-full p-5 font-normal rounded-[10px] outline-none h-[52px]
+                  placeholder:text-[#99A1AF]
 
-              {isPassword && (
-                <button
-                  type="button"
-                  data-testid="toggle-password"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-5 top-1/2 -translate-y-1/2 cursor-pointer"
-                >
-                  {showPassword ? (
-                    <LuEyeClosed size={24} color="#66666E" />
-                  ) : (
-                    <IoEyeOutline size={24} color="#66666E" />
-                  )}
-                </button>
-              )}
+                  ${errors?.[name]
+                      ? "border border-[#C10007] bg-[#FEF2F2] text-[#C10007]"
+                      : isPasswordValid
+                        ? "border border-[#008235] bg-[#F0FDF4]"
+                        : "border border-[#E5E7EB] bg-[#F3F4F6] focus:border-[#0069A8]"
+                    }
+      `}
+                />
+
+                {isPassword && (
+                  <button
+                    type="button"
+                    data-testid="toggle-password"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-5 top-1/2 -translate-y-1/2 cursor-pointer"
+                  >
+                    {showPassword ? (
+                      <LuEyeClosed size={24} color="#66666E" />
+                    ) : (
+                      <IoEyeOutline size={24} color="#66666E" />
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
 
-            {errors?.[name] && (
-              <span className="text-[#CF1A0F] font-normal text-base">
+            {errors?.[name] && (!isPassword || rules.length === 0) && (
+              <span className="text-[#C10007] font-normal text-base">
                 {errors[name]?.message as string}
+              </span>
+            )}
+
+            {isPassword && hasInvalidRule && (
+              <div className="flex flex-col gap-2 text-[19px]">
+                <span className="text-[#C10007]">Sua senha deve conter:</span>
+                {rules.map((rule) => (
+                  <div key={rule.label} className="flex items-center gap-2">
+                    {rule.valid
+                      ? <BiCheck className="text-primary-blue-700 w-5 h-5" />
+                      : <VscError className="text-[#C10007] w-5 h-5" />
+                    }
+                    <span className="text-[#111111D9] text-sm">
+                      {rule.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {isPasswordValid && (
+              <span className="text-[#008235] font-medium text-base">
+                Senha forte
               </span>
             )}
           </div>

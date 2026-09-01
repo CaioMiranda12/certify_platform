@@ -27,8 +27,24 @@ export const SignUpStudentSchema = z.object({
     }),
   password: z
     .string()
-    .min(8, { message: "A senha deve ter pelo menos 8 caracteres" })
-    .max(100, { message: "A senha deve ter no máximo 100 caracteres" }),
+    .min(8, {
+      message: "A senha deve ter pelo menos 8 caracteres",
+    })
+    .max(100, {
+      message: "A senha deve ter no máximo 100 caracteres",
+    })
+    .regex(/\d/, {
+      message: "A senha deve conter pelo menos 1 número",
+    })
+    .regex(/[A-Z]/, {
+      message: "A senha deve conter pelo menos 1 letra maiúscula",
+    })
+    .regex(/[a-z]/, {
+      message: "A senha deve conter pelo menos 1 letra minúscula",
+    })
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, {
+      message: "A senha deve conter pelo menos 1 caractere especial",
+    }),
   confirmPassword: z
     .string()
     .min(8, { message: "Confirme sua senha" }),
