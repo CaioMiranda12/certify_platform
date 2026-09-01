@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BiLoader } from "react-icons/bi";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FiEye, FiEyeOff,  FiAlertCircle } from "react-icons/fi";
 import { ToastContainer, toast } from 'react-toastify';
 import { useLoginAuth } from "@/hooks/Auth/useLoginAuth";
 import { useFormValidation } from "@/hooks/useForm";
@@ -21,160 +21,306 @@ export const FormLogin = () => {
   const { auth } = useAuthStoreData();
   const navigation = useNavigate();
 
-  useEffect(() => {
-    if (!auth?._id) return;
-    if ((auth.role as string) === "empresa") {
-      navigation("/"); // Placeholder, redirect according to your existing structure
-    } else {
-      navigation("/meus-certificados");
-    }
-  }, [auth, navigation]);
+useEffect(() => {
+  if (!auth?._id) return;
 
-  useEffect(() => {
-    if (isError) {
-      toast.error('E-mail ou senha inválidos.', {
-        position: "top-center",
-        autoClose: 5000,
-        ...TOAST_STYLES.error
-      });
-    }
+  if ((auth.role as string) === "empresa") {
+    navigation("/");
+  } else {
+    navigation("/meus-certificados");
+  }
+}, [auth, navigation]);
 
-    if (isSuccess) {
-      toast.success('Login realizado com sucesso!', {
-        position: "top-center",
-        autoClose: 3000,
-        ...TOAST_STYLES.success
-      });
-    }
-  }, [isError, isSuccess]);
+useEffect(() => {
+  if (isError) {
+    toast.error("E-mail ou senha inválidos.", {
+      position: "top-center",
+      autoClose: 5000,
+      ...TOAST_STYLES.error,
+    });
+  }
 
-  const onSubmit = handleSubmit((formData: any) => {
-    const authData = {
-      ...formData,
-      role
-    };
-    mutate(authData);
-  });
+  if (isSuccess) {
+    toast.success("Login realizado com sucesso!", {
+      position: "top-center",
+      autoClose: 3000,
+      ...TOAST_STYLES.success,
+    });
+  }
+}, [isError, isSuccess]);
 
-  return (
-    <section className="flex min-h-screen w-full font-inter bg-[#F4F5F9] lg:bg-white text-[#1A1551]">
-      <ToastContainer />
+const onSubmit = handleSubmit((formData: any) => {
+  const authData = {
+    ...formData,
+    role,
+  };
 
-      {/* Left Panel - Form */}
-      <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-16 xl:px-32 relative bg-[#fefefe]">
-        <div className="max-w-md w-full mx-auto lg:mx-0 xl:mx-auto">
-          {/* Logo */}
-          <div className="mb-12 flex justify-center w-full">
-            <img src={Logo} alt="Certify Logo" className="h-[4.5rem]" />
-          </div>
+  mutate(authData);
+});
 
-          <h1 className="text-3xl lg:text-3xl font-bold mb-3 line-heigth:1.79rem text-[#0e0393]">Acesse sua conta</h1>
-          <p className="text-gray-600 mb-8 text-sm lg:text-base leading-relaxed">
-            Você pode acessar sua conta com e-mail, {role === "empresa" ? "CNPJ" : "CPF"} ou telefone e senha cadastrados
-          </p>
+return (
+  <section className="flex min-h-screen w-full bg-white font-inter text-[#1A1551]">
+    <ToastContainer />
 
-          <p className="sr-only">Login / Selecione se você é empresa ou aluno</p>
+    <div className="flex min-h-screen w-full flex-col justify-center bg-white px-6 py-8 sm:px-8 md:w-1/2 md:px-12 lg:px-16 xl:px-24">
+      <div className="mx-auto w-full max-w-md">
 
-          {/* Role Selector */}
-          <div className="flex space-x-4 mb-6">
-            <button
-              type="button"
-              className={`flex-1 py-3 rounded-2xl border font-semibold transition-colors ${role === "aluno"
-                  ? "bg-[#E0E7FF] border-[#3a30f6] text-[#3a30f6]"
-                  : "bg-transparent border-gray-300 text-gray-500 hover:border-gray-400"
-                }`}
-              onClick={() => setRole("aluno")}
+        <div className="mb-8 flex items-center justify-end gap-2 text-sm md:text-base">
+          <span className="text-[#4B5563]">
+            Ainda não tem conta?
+          </span>
+
+          <Link
+            to="/cadastro"
+            className="font-bold text-[#0069A8] transition-colors hover:underline"
+          >
+            Criar conta
+          </Link>
+        </div>
+
+        <div className="mb-7">
+          <h1 className="mb-3 text-[31px] font-semibold leading-tight text-[#060607]">
+            Login
+          </h1>
+        </div>
+
+        <div
+          className="mb-7 flex gap-4"
+          role="tablist"
+          aria-label="Selecione o tipo de perfil"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={role === "aluno"}
+            onClick={() => setRole("aluno")}
+            className={`flex-1 rounded-xl border py-3 font-semibold transition-all duration-200 ${
+              role === "aluno"
+                ? "border-[#0069A8] bg-[#0069A8] text-white"
+                : "border-[#D1D5DB] bg-white text-[#4B5563] hover:border-[#0069A8] hover:text-black"
+            }`}
+          >
+            Aluno
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={role === "empresa"}
+            onClick={() => setRole("empresa")}
+            className={`flex-1 rounded-xl border py-3 font-semibold transition-all duration-200 ${
+              role === "empresa"
+                ? "border-[#0069A8] bg-[#0069A8] text-white"
+                : "border-[#D1D5DB] bg-white text-[#4B5563] hover:border-[#0069A8] hover:text-black"
+            }`}
+          >
+            Empresa
+          </button>
+        </div>
+
+        <div className="space-y-5">
+
+          <div>
+            <label
+              htmlFor="email"
+              className="mb-2 block text-sm font-semibold text-[#1A1551]"
             >
-              Aluno
-            </button>
-            <button
-              type="button"
-              className={`flex-1 py-3 rounded-2xl border font-semibold transition-colors ${role === "empresa"
-                  ? "bg-[#E0E7FF] border-[#3a30f6] text-[#3a30f6]"
-                  : "bg-transparent border-gray-300 text-gray-500 hover:border-gray-400"
-                }`}
-              onClick={() => setRole("empresa")}
-            >
-              Empresa
-            </button>
-          </div>
+              E-mail
+            </label>
 
-          <form onSubmit={onSubmit} className="space-y-4">
-            {/* Email Field */}
             <div className="relative">
               <input
                 {...register("email")}
-                type="text"
-                placeholder={`E-mail ou ${role === "empresa" ? "CNPJ" : "CPF"}`}
-                className={`w-full bg-[#E8E8E8] px-4 py-4 rounded-xl border focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50 transition-all font-medium ${errors.email ? "border-red-500 ring-1 ring-red-500" : "border-transparent"
-                  }`}
+                id="email"
+                type="email"
+                placeholder="Digite seu e-mail"
+                autoComplete="email"
+                aria-label="E-mail"
+                aria-required="true"
+                aria-invalid={!!errors.email || isError}
+                className={`w-full rounded-xl border px-4 py-4 font-medium text-[#1A1551] outline-none transition-all duration-200 placeholder:text-[#6B7280] ${
+                  errors.email || isError
+                    ? "border-[#DC2626] bg-[#FEE2E2] focus:border-[#DC2626] focus:ring-2 focus:ring-[#DC2626]/20"
+                    : "border-transparent bg-[#F3F4F6] focus:border-[#08080D] focus:ring-2 focus:ring-[#08080D]/20"
+                }`}
               />
+
+              {(errors.email || isError) && (
+                <FiAlertCircle
+                  size={21}
+                  aria-hidden="true"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#DC2626]"
+                />
+              )}
             </div>
 
-            {/* Password Field */}
+            {errors.email && (
+              <p
+                role="alert"
+                className="mt-2 text-sm font-medium text-[#DC2626]"
+              >
+                Digite um e-mail válido
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="mb-2 block text-sm font-semibold text-[#1A1551]"
+            >
+              Senha
+            </label>
+
             <div className="relative">
               <input
                 {...register("password")}
+                id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Senha"
-                className={`w-full bg-[#E8E8E8] px-4 py-4 rounded-xl border pr-12 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50 transition-all font-medium ${errors.password ? "border-red-500 ring-1 ring-red-500" : "border-transparent"
-                  }`}
+                placeholder="Digite sua senha"
+                autoComplete="current-password"
+                aria-label="Senha"
+                aria-required="true"
+                aria-invalid={!!errors.password || isError}
+                className={`w-full rounded-xl border px-4 py-4 pr-14 font-medium text-[#1A1551] outline-none transition-all duration-200 placeholder:text-[#6B7280] ${
+                  errors.password || isError
+                    ? "border-[#DC2626] bg-[#FEE2E2] focus:border-[#DC2626] focus:ring-2 focus:ring-[#DC2626]/20"
+                    : "border-transparent bg-[#F3F4F6] focus:border-[#08080D] focus:ring-2 focus:ring-[#08080D]/20"
+                }`}
               />
+
+              {(errors.password || isError) && (
+                <FiAlertCircle
+                  size={21}
+                  aria-hidden="true"
+                  className="absolute right-14 top-1/2 -translate-y-1/2 text-[#DC2626]"
+                />
+              )}
+
               <button
                 type="button"
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={
+                  showPassword ? "Ocultar senha" : "Exibir senha"
+                }
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#919192] transition-colors hover:text-[#1A1551]"
               >
-                {showPassword ? <FiEyeOff size={22} /> : <FiEye size={22} />}
+                {showPassword ? (
+                  <FiEyeOff size={22} />
+                ) : (
+                  <FiEye size={22} />
+                )}
               </button>
             </div>
 
-            {/* Shared Error Message as requested */}
-            {(errors.email || errors.password) && (
-              <p className="text-red-500 text-sm mt-1 font-medium">
-                E-mail ou senha inválidos.
+            {errors.password && (
+              <p
+                role="alert"
+                className="mt-2 text-sm font-medium text-[#DC2626]"
+              >
+                Senha incorreta
               </p>
             )}
+          </div>
 
-            {/* Remember Me */}
-            <div className="flex items-center space-x-2 pt-1 pb-1">
+          {isError && (
+            <p
+              role="alert"
+              className="text-sm font-medium text-[#DC2626]"
+            >
+              E-mail ou senha inválidos.
+            </p>
+          )}
+
+          <div className="mt-2 flex items-start justify-between gap-4">
+            <div className="flex items-center pt-2">
               <input
+                {...register("rememberMe")}
                 type="checkbox"
-                id="remember"
-                className="w-4 h-4 rounded border-gray-300 text-[#4F46E5] focus:ring-[#4F46E5]"
+                id="rememberMe"
+                defaultChecked
+                className="h-4 w-4 rounded border-[#D1D5DB] text-[#4F46E5] focus:ring-[#4F46E5]"
               />
-              <label htmlFor="remember" className="text-sm font-medium text-[#1A1551]">
-                Lembre - se de mim
+
+              <label
+                htmlFor="rememberMe"
+                className="ml-2 cursor-pointer text-sm font-medium text-[#4B5563]"
+              >
+                Lembrar senha
               </label>
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={!isValid || isPending}
-              className="w-full py-4 bg-[#4F46E5] text-white rounded-xl font-bold mt-2 disabled:bg-[#4F46E5]/50 disabled:cursor-not-allowed hover:bg-[#4338CA] transition-colors flex justify-center items-center"
+            <Link
+              to="/forgot-password"
+              state={{ role }}
+              className="-mt-1 text-right text-sm font-bold text-[#0069A8] transition-colors hover:underline"
             >
-              {isPending ? <BiLoader size={24} className="animate-spin" /> : "Acessar"}
-            </button>
+              Esqueci minha senha
+            </Link>
+          </div>
 
-            {/* Forgot Password Link */}
-            <div className="text-center mt-6">
-              <Link to="/forgot-password" state={{ role }} className="text-sm text-[#4F46E5] font-bold hover:underline transition-all block mt-4">
-                Esqueci a senha
-              </Link>
-            </div>
-          </form>
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={!isValid || isPending}
+            aria-live="polite"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0069A8] py-4 font-bold text-white transition-colors duration-200 hover:bg-[#145572] disabled:cursor-not-allowed disabled:bg-[#9CA3AF]"
+          >
+            {isPending ? (
+              <>
+                <BiLoader
+                  size={22}
+                  className="animate-spin"
+                  aria-hidden="true"
+                />
+                <span>Carregando</span>
+              </>
+            ) : (
+              "Entrar"
+            )}
+          </button>
+        </div>
+
+        <div className="mt-8">
+          <p className="mb-1 text-sm text-black">
+            Precisa de ajuda?
+          </p>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm text-[#4B5563]">
+              Fale com o nosso suporte
+            </span>
+
+            <a
+              href="mailto:suporte@certify.com.br"
+              className="text-sm font-semibold text-[#0069A8] transition-colors hover:underline"
+            >
+              suporte@certify.com.br
+            </a>
+          </div>
         </div>
       </div>
+    </div>
 
-      {/* Right Panel - Image */}
-      <div className="hidden lg:block lg:flex-1 relative bg-black">
+    <div className="relative hidden min-h-screen w-1/2 overflow-hidden md:block">
+      <img
+        src={role === "empresa" ? EmpresaPhoto : GirlWithCertificate}
+        alt={
+          role === "empresa"
+            ? "Imagem promocional para empresa"
+            : "Imagem promocional de formatura"
+        }
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+
+      <div className="absolute right-8 top-8 z-10">
         <img
-          src={role === "empresa" ? EmpresaPhoto : GirlWithCertificate}
-          alt="Imagem de destaque login"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${role === "empresa" ? "grayscale" : ""}`}
+          src={Logo}
+          alt="Logo Certify"
+          className="h-16 w-auto"
         />
       </div>
-    </section>
-  );
+    </div>
+  </section>
+);
 };
