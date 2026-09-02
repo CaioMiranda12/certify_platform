@@ -84,6 +84,7 @@ export function CompanyForm() {
             errors={errors}
             label="CNPJ"
             placeholderText="Digite seu CNPJ"
+            mask="cnpj"
           />
 
           <Input<SignUpCompanySchemaType>
