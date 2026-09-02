@@ -1,3 +1,4 @@
+import { formatCNPJ } from "@/utils/formatCnpj";
 import { formatCPF } from "@/utils/formatCpf";
 import { formatPhone } from "@/utils/formatPhone";
 import { useState } from "react";
@@ -7,6 +8,7 @@ import { IoEyeOutline } from "react-icons/io5";
 import { LuEyeClosed } from "react-icons/lu";
 import { VscError } from "react-icons/vsc";
 
+type MaskType = "cpf" | "cnpj" | "phone";
 interface InputProps<T extends FieldValues> {
   name: Path<T>;
   control: Control<T>;
@@ -15,7 +17,7 @@ interface InputProps<T extends FieldValues> {
   label?: string;
   placeholderText: string;
   isOptional?: boolean;
-  mask?: "cpf" | "phone";
+  mask?: MaskType;
   rules?: PasswordRule[];
 }
 
@@ -47,12 +49,12 @@ export function Input<T extends FieldValues>({
     rules.length > 0 &&
     !hasInvalidRule;
 
-  type MaskType = "cpf" | "phone" | "none";
-
   function applyMask(value: string, mask?: MaskType) {
     switch (mask) {
       case "cpf":
         return formatCPF(value);
+      case "cnpj":
+        return formatCNPJ(value);
       case "phone":
         return formatPhone(value);
       default:
