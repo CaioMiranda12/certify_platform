@@ -63,18 +63,18 @@ export const SignUpCompanySchema = z.object({
     .string()
     .min(1, "O e-mail é obrigatório")
     .email("Digite um e-mail válido"),
-  organizationName: z.
-    string()
-    .min(1, "O nome da empresa é obrigatório"),
+  // organizationName: z.
+  //   string()
+  //   .min(1, "O nome da empresa é obrigatório"),
   cnpj: z
     .string()
     .transform((value) => value.replace(/\D/g, ""))
     .refine((cnpj) => cnpj.length === 14, {
       message: "CNPJ deve ter 14 dígitos",
     }),
-  occupation: z
-    .string()
-    .min(1, "A ocupação é obrigatória"),
+  // occupation: z
+  //   .string()
+  //   .min(1, "A ocupação é obrigatória"),
   phone: z
     .string()
     .transform((value) => value.replace(/\D/g, ""))
