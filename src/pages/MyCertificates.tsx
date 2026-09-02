@@ -79,17 +79,24 @@ export function MyCertificates() {
 
   return (
     <div>
-      <main className="bg-[#F4F5F9] min-h-[calc(100vh-112px)] py-[65px] px-[96px]">
-        <div className="w-full max-w-[842px] h-[60px] bg-[#D8D8DAC2] flex items-center gap-[27px] rounded-[20px] px-3 py-1.5 mx-auto">
-          <IoIosSearch className="w-12 h-12" color="#66666E" />
+      <main className="bg-[#F3F4F6] min-h-[calc(100vh-112px)] py-[65px] px-12 md:px-[96px]">
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-[842px] flex items-center gap-4
+          p-5 font-normal text-[#262626] rounded-[8px] outline-none h-[52px] border border-[#99A1AF] bg-transparent 
+            focus:border-[#0069A8]
+            placeholder:text-[#262626]
+          ">
+            <input
+              className="w-full outline-none text-base"
+              placeholder="Busque seus certificados"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
 
-          <input
-            type="text"
-            placeholder="Buscar"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full h-full bg-transparent outline-none border-none placeholder:font-bold text-[27px]"
-          />
+            <div className=" flex justify-center">
+              <IoIosSearch />
+            </div>
+          </div>
         </div>
 
         {!filteredCertificates && (
@@ -101,10 +108,10 @@ export function MyCertificates() {
         )}
 
         {filteredCertificates && (
-          <section className="mt-[72px]">
-            <h2 className="text-primary-blue-600 font-bold text-[35px] mb-[55px]">Meus Certificados</h2>
+          <section className="mt-[32px]">
+            <h2 className="text-[#1E293B] font-bold text-2xl mb-20">Meus Certificados</h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-[32px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
               {filteredCertificates.map((cert) => (
                 <CertificateCard
                   key={cert.event}
