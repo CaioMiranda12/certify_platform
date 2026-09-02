@@ -12,6 +12,7 @@ interface InputProps<T extends FieldValues> {
   control: Control<T>;
   errors?: FieldErrors<T>;
   typeInput?: string;
+  label?: string;
   placeholderText: string;
   isOptional?: boolean;
   mask?: "cpf" | "phone";
@@ -29,6 +30,7 @@ export function Input<T extends FieldValues>({
   control,
   errors,
   typeInput = 'text',
+  label,
   placeholderText,
   isOptional = false,
   mask,
@@ -75,16 +77,18 @@ export function Input<T extends FieldValues>({
         render={({ field }) => (
           <div className="flex flex-col gap-1.5">
             <div className="relative">
-              <label className="text-[#171717]">
-                {placeholderText}
-                {!isOptional && <span className="text-[#F73B3B]">*</span>}
-              </label>
+              {label && (
+                <label className="text-[#171717]">
+                  {label}
+                  {!isOptional && <span className="text-[#F73B3B]">*</span>}
+                </label>
+              )}
               <div className="relative mt-2">
                 <input
                   {...field}
                   name={name}
                   type={formattedType}
-                  placeholder={isOptional ? placeholderText : `${placeholderText} *`}
+                  placeholder={isOptional ? placeholderText : `${placeholderText}`}
                   onChange={(e) =>
                     handleInputChange(e.target.value, field.onChange, mask)
                   }
