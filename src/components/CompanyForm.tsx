@@ -12,7 +12,7 @@ import { toCompanyPayload } from "@/adapters/auth/toCompanyPayload";
 import { getPasswordRules } from "@/utils/passwordRules";
 
 export function CompanyForm() {
-  const { errors, handleSubmit, reset, control, watch } = useFormValidation(SignUpCompanySchema, {
+  const { errors, handleSubmit, reset, control, watch, isValid } = useFormValidation(SignUpCompanySchema, {
     fullname: "",
     email: "",
     cnpj: "",
@@ -117,7 +117,7 @@ export function CompanyForm() {
         />
 
         <div className="w-full h-[52px]">
-          <PrimaryButton isDisabled={isPending || !rules.every(rule => rule.valid) || watch("password") !== watch("confirmPassword")}>
+          <PrimaryButton isDisabled={isPending || !isValid}>
             {isPending ? (
               <>
                 Carregando

@@ -12,7 +12,7 @@ import { toStudentPayload } from "@/adapters/auth/toStudentPayload";
 import { getPasswordRules } from "@/utils/passwordRules";
 
 export function StudentForm() {
-  const { errors, handleSubmit, reset, control, watch } = useFormValidation(SignUpStudentSchema, {
+  const { errors, handleSubmit, reset, control, watch, isValid } = useFormValidation(SignUpStudentSchema, {
     fullname: "",
     email: "",
     cpf: "",
@@ -118,7 +118,7 @@ export function StudentForm() {
         />
 
         <div className="w-full h-[52px]">
-          <PrimaryButton isDisabled={isPending || !rules.every(rule => rule.valid) || watch("password") !== watch("confirmPassword")}>
+          <PrimaryButton isDisabled={isPending || !isValid}>
             {isPending ? (
               <>
                 Carregando
