@@ -39,8 +39,8 @@ export const DownloadCertificate = () => {
             <p className='text-black font-normal text-base'>Instituto de Tecnologia e Desenvolvimento</p>
           </div>
 
-          <div className='flex flex-col items-center'>
-            <div className="w-full h-[1px] bg-black"></div>
+          <div className='flex flex-col items-center w-[355px] max-w-full'>
+            <div className="w-full h-px bg-black mb-1"></div>
             <span>Nome do responsável</span>
             <span>Descrição do cargo</span>
           </div>
