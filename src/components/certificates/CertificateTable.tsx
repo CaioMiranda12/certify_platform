@@ -1,4 +1,5 @@
 import type { Certificate, RequestStatus } from "./types";
+
 import { CertificateRow } from "./CertificateRow";
 import { EmptyState } from "./EmptyState";
 import { CertificateLoading } from "./CertificateLoading";
@@ -29,7 +30,7 @@ export function CertificateTable({
   searchQuery,
   onCreate,
   isRetrying,
-  onRetry
+  onRetry,
 }: CertificateTableProps) {
   if (status === "loading") {
     return (
@@ -42,7 +43,10 @@ export function CertificateTable({
   if (status === "error") {
     return (
       <div className="w-full overflow-hidden rounded-lg bg-white">
-        <CertificateError onRetry={onRetry} isRetrying={isRetrying} />
+        <CertificateError
+          onRetry={onRetry}
+          isRetrying={isRetrying}
+        />
       </div>
     );
   }
@@ -59,42 +63,45 @@ export function CertificateTable({
 
   return (
     <div className="w-full overflow-hidden rounded-lg bg-white">
-      <table className="w-full table-fixed border-collapse">
-        <thead>
-          <tr className="border-b border-[#111111]/10">
-            {columns.map((column) => (
-              <th
-                key={column.label}
-                scope="col"
-                className={`
-                  ${column.className}
-                  px-6
-                  py-4
-                  text-left
-                  text-sm
-                  font-semibold
-                  text-[#111111]
-                `}
-              >
-                {column.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
+      {!isEmpty && (
+        <div className="w-full overflow-x-auto">
+          <table className="w-full min-w-[800px] table-fixed border-collapse">
+            <thead>
+              <tr className="border-b border-[#111111]/10">
+                {columns.map((column) => (
+                  <th
+                    key={column.label}
+                    scope="col"
+                    className={`
+                      ${column.className}
+                      px-6
+                      py-4
+                      text-left
+                      text-sm
+                      font-semibold
+                      text-[#111111]
+                    `}
+                  >
+                    {column.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
 
-        {!isEmpty && (
-          <tbody>
-            {certificates.map((certificate) => (
-              <CertificateRow
-                key={certificate.id}
-                certificate={certificate}
-              />
-            ))}
-          </tbody>
-        )}
-      </table>
+            <tbody>
+              {certificates.map((certificate) => (
+                <CertificateRow
+                  key={certificate.id}
+                  certificate={certificate}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {isEmpty && <EmptyState onCreate={onCreate} />}
     </div>
   );
 }
+
