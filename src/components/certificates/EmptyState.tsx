@@ -14,8 +14,8 @@ export function EmptyState({
         className="
           mb-4
           flex
-          h-28
-          w-28
+          h-48
+          w-64
           items-center
           justify-center
         "
