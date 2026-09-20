@@ -4,20 +4,23 @@ import { PrimaryButton } from "@/components/ButtonPrimary";
 import { CertificateFilters } from "@/components/certificates/CertificateFilters";
 import { CertificateTable } from "@/components/certificates/CertificateTable";
 import { certificates } from "@/components/certificates/data/certificates.data";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { CiFilter } from "react-icons/ci";
 import { CiBellOn } from "react-icons/ci";
 import { MdAdd } from "react-icons/md";
 import type {
   CertificateFilters as CertificateFiltersType,
+  RequestStatus,
 } from "@/components/certificates/types";
 
 export const CertificateCompany = () => {
   const filterOptions = ['Todos', 'Rascunhos', 'Emitidos', 'Expirados', 'Cancelados'];
   const [activeFilter, setActiveFilter] = useState("Todos");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [status, setStatus] = useState<RequestStatus>("error");
+  const [isRetrying, setIsRetrying] = useState(false);
 
   function handleCreateCertificate() {
     console.log("Criar certificado");
@@ -28,6 +31,31 @@ export const CertificateCompany = () => {
   ) {
     console.log("Filtros aplicados:", filters);
   }
+
+  function handleRetry() {
+    setIsRetrying(true);
+
+    setTimeout(() => {
+      setIsRetrying(false);
+      setStatus("success"); // troque para "error" se quiser simular falha de novo
+    }, 1500);
+  }
+
+  const filteredCertificates = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return certificates;
+
+    return certificates.filter((certificate) =>
+      certificate.name.toLowerCase().includes(term) ||
+      certificate.student.toLowerCase().includes(term) ||
+      String(certificate.id).includes(term)
+    );
+  }, [searchTerm]);
+
+  const displayStatus: RequestStatus =
+    status === "success" && certificates.length > 0 && filteredCertificates.length === 0
+      ? "notFound"
+      : status;
 
   return (
     <div>
@@ -60,6 +88,8 @@ export const CertificateCompany = () => {
               <CiSearch />
 
               <input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar certificado, aluno ou ID..."
                 className="w-full outline-none"
               />
@@ -131,7 +161,11 @@ export const CertificateCompany = () => {
 
       <section className="mt-3">
         <CertificateTable
-          certificates={certificates}
+          certificates={filteredCertificates}
+          status={displayStatus}
+          searchQuery={searchTerm}
+          isRetrying={isRetrying}
+          onRetry={handleRetry}
           onCreate={handleCreateCertificate}
         />
       </section>
