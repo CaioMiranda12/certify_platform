@@ -14,6 +14,8 @@ import type {
   RequestStatus,
 } from "@/components/certificates/types";
 import { SelectTemplateModal } from "@/components/certificates/SelectTemplateModal";
+import { useCertificateDrafts } from "@/hooks/Certificate/useCertificateDrafts";
+import { toCertificateListItem } from "@/adapters/certificate/toCertificateListItem";
 
 export const CertificateCompany = () => {
   const filterOptions = ['Todos', 'Rascunhos', 'Emitidos', 'Expirados', 'Cancelados'];
@@ -23,12 +25,18 @@ export const CertificateCompany = () => {
   const [status, setStatus] = useState<RequestStatus>("error");
   const [isRetrying, setIsRetrying] = useState(false);
   const [isCreateCertificateOpen, setIsCreateCertificateOpen] = useState<boolean>(false)
+  const { drafts, startNewDraft } = useCertificateDrafts();
+
+  const allCertificates = useMemo(
+    () => [...drafts.map(toCertificateListItem), ...certificates],
+    [drafts],
+  );
 
   function handleCreateCertificate() {
-    console.log("Criar certificado");
-
-    setIsCreateCertificateOpen(true)
+    startNewDraft();
+    setIsCreateCertificateOpen(true);
   }
+
 
   function handleApplyFilters(
     filters: CertificateFiltersType,
@@ -47,14 +55,14 @@ export const CertificateCompany = () => {
 
   const filteredCertificates = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-    if (!term) return certificates;
+    if (!term) return allCertificates;
 
-    return certificates.filter((certificate) =>
+    return allCertificates.filter((certificate) =>
       certificate.name.toLowerCase().includes(term) ||
       certificate.student.toLowerCase().includes(term) ||
       String(certificate.id).includes(term)
     );
-  }, [searchTerm]);
+  }, [allCertificates, searchTerm]);
 
   const displayStatus: RequestStatus =
     status === "success" && certificates.length > 0 && filteredCertificates.length === 0
