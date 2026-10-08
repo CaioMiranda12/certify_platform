@@ -5,7 +5,7 @@ export type CertificateStatus =
   | "draft";
 
 export interface Certificate {
-  id: number;
+   id: number | string;
   name: string;
   student: string;
   model: string;
