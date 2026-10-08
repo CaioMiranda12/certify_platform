@@ -1,14 +1,16 @@
 import { MdMoreVert } from "react-icons/md";
 import type { Certificate } from "./types";
 import { StatusBadge } from "./StatusBadge";
-
 interface CertificateRowProps {
   certificate: Certificate;
+  onOpenActions: (certificate: Certificate) => void;
 }
 
 export function CertificateRow({
   certificate,
+  onOpenActions,
 }: CertificateRowProps) {
+
   return (
     <tr className="border-b border-[#111111]/10 last:border-b-0">
       <td className="px-6 py-4 text-sm font-medium text-[#111111]">
@@ -35,6 +37,8 @@ export function CertificateRow({
         <button
           type="button"
           aria-label={`Ações para ${certificate.name}`}
+          aria-haspopup="dialog"
+          onClick={() => onOpenActions(certificate)}
           className="
             flex
             h-8
