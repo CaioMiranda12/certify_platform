@@ -5,6 +5,11 @@ import { EmptyState } from "./EmptyState";
 import { CertificateLoading } from "./CertificateLoading";
 import { CertificateError } from "./CertificateError";
 import { CertificateNotFound } from "./CertificateNotFound";
+import { useState } from "react";
+import type { CertificateActionId } from "./certificateActions";
+import { CertificateActionsModal } from "./CertificateActionsModal";
+import { CERTIFICATE_PATHS } from "@/config/certificatePaths";
+import { useNavigate } from "react-router-dom";
 
 interface CertificateTableProps {
   certificates: Certificate[];
@@ -32,6 +37,26 @@ export function CertificateTable({
   isRetrying,
   onRetry,
 }: CertificateTableProps) {
+  const [selectedCertificate, setSelectedCertificate] = useState<Certificate | null>(null);
+
+  const navigate = useNavigate();
+
+  const closeActionsModal = () => setSelectedCertificate(null);
+
+  const handleSelectAction = (actionId: CertificateActionId, certificate: Certificate) => {
+    closeActionsModal();
+
+    switch (actionId) {
+      case "view":
+        navigate(CERTIFICATE_PATHS.edit(certificate.id));
+        break;
+      case "edit":
+      case "duplicate":
+      case "delete":
+        break;
+    }
+  };
+
   if (status === "loading") {
     return (
       <div className="w-full overflow-hidden rounded-lg bg-white">
@@ -93,6 +118,7 @@ export function CertificateTable({
                 <CertificateRow
                   key={certificate.id}
                   certificate={certificate}
+                  onOpenActions={setSelectedCertificate}
                 />
               ))}
             </tbody>
@@ -101,6 +127,12 @@ export function CertificateTable({
       )}
 
       {isEmpty && <EmptyState onCreate={onCreate} />}
+
+      <CertificateActionsModal
+        certificate={selectedCertificate}
+        onClose={closeActionsModal}
+        onSelectAction={handleSelectAction}
+      />
     </div>
   );
 }
