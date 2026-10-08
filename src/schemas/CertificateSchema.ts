@@ -1,3 +1,4 @@
+import { isValidCPF } from "@/utils/validators/isValidCPF";
 import { z } from "zod";
 
 export const variantSchema = z.enum(["classico", "moderno", "ornamental", "sem-borda"]);
@@ -30,15 +31,18 @@ export const stepOneSchema = z.object({
   signature: uploadedImageSchema.optional(),
 });
 
+export const participantSchema = z.object({
+  name: z.string().trim().min(1, "Nome obrigatório"),
+  email: z.email("E-mail inválido"),
+  cpf: z
+    .string()
+    .transform((value) => value.replace(/\D/g, ""))
+    .refine((cpf) => cpf.length === 11, { message: "CPF deve ter 11 dígitos" })
+    .refine(isValidCPF, { message: "CPF inválido" }),
+});
+
 export const stepTwoSchema = z.object({
-  participants: z
-    .array(
-      z.object({
-        name: z.string().min(1, "Nome obrigatório"),
-        email: z.email("E-mail inválido"),
-      }),
-    )
-    .min(1, "Adicione ao menos um participante"),
+  participants: z.array(participantSchema).min(1, "Adicione ao menos um participante"),
 });
 
 export const certificateFormSchema = z
@@ -66,3 +70,4 @@ export const certificateFormSchema = z
 
 export type SelectTemplateData = z.infer<typeof selectTemplateSchema>;
 export type CertificateFormData = z.infer<typeof certificateFormSchema>;
+export type ParticipantFormData = z.infer<typeof participantSchema>;
